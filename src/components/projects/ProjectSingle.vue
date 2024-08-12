@@ -7,20 +7,16 @@ export default {
 		return {
 			result: [],
 			modalVisible: false, // Data property to control modal visibility
-
 			apiKey: "c586a88813394225a6bb560d838eb03b",
 		};
 	},
 	methods: {
 		async openModal() {
-			// Simulate loading for 1 second
 			await this.getInfo(this.project.id);
-
 			this.modalVisible = true; // Show modal
 		},
 		closeModal() {
-			// Function to close the modal
-			this.modalVisible = false;
+			this.modalVisible = false; // Close modal
 		},
 		async getInfo(id) {
 			try {
@@ -29,7 +25,6 @@ export default {
 				);
 				const data = await response.json();
 				this.result = data;
-				console.log(this.result.analyzedInstructions[0].steps);
 			} catch (error) {
 				console.error(error);
 			}
@@ -37,51 +32,32 @@ export default {
 	},
 	components: {
 		CModal,
-
 		CModalBody,
 	},
 };
 </script>
 
 <template>
-	<!-- <router-link
-		to="/projects/recipe-information"
-		class="rounded-xl shadow-lg hover:shadow-xl cursor-pointer mb-10 sm:mb-0 bg-secondary-light dark:bg-ternary-dark"
-		aria-label="Recipe Information" 
-	
-	> -->
 	<div
-		class="rounded-xl shadow-lg hover:shadow-xl cursor-pointer mb-10 sm:mb-0 bg-secondary-light dark:bg-ternary-dark"
+		class="rounded-xl shadow-lg hover:shadow-xl cursor-pointer mb-10 sm:mb-0 bg-secondary-light dark:bg-ternary-dark border-container"
 		@click="openModal()"
 	>
-		<div>
-			<img
-				:src="project.image"
-				:alt="project.title"
-				class="rounded-t-xl border-none"
-			/>
+		<div class="image-container">
+			<img :src="project.image" :alt="project.title" class="image" />
 		</div>
-		<div class="text-center px-4 py-6">
-			<p
-				class="font-general-semibold text-xl text-ternary-dark dark:text-ternary-light font-semibold mb-2"
-			>
+		<div class="text-container px-3 mb-3 flex flex-col justify-between">
+			<p class="font-general-semibold text-sm text-ternary-dark dark:text-ternary-light font-semibold mb-2">
 				{{ project.title }}
 			</p>
-			<span
-				class="font-general-medium text-lg text-ternary-dark dark:text-ternary-light"
-				>Click for more details</span
-			>
+			<span class="font-general-medium text-xs text-ternary-dark dark:text-ternary-light self-center mt-auto">
+				Click for more details
+			</span>
 		</div>
-		<!-- </router-link> -->
 	</div>
-	<CModal size="xl" scrollable :visible="modalVisible" @close="closeModal()">
+
+	<CModal size="lg" scrollable :visible="modalVisible" @close="closeModal()">
 		<div class="modal-header">
-			<h5
-				class="modal-title"
-				style="font-size: 24px; /* Font size */
-			font-weight: bold; /* Font weight */
-			text-align: left; /* Text"
-			>
+			<h5 class="modal-title">
 				{{ project.title }}
 			</h5>
 			<button
@@ -89,54 +65,34 @@ export default {
 				class="close"
 				aria-label="Close"
 				@click="closeModal()"
-				style="font-size: 30px"
 			>
 				<span aria-hidden="true">&times;</span>
 			</button>
 		</div>
 		<CModalBody>
-			<div style="text-align: left; display: flex">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					height="1em"
-					viewBox="0 0 512 512"
-					style="margin-top: 2px"
-				>
-					<!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-					<path
-						d="M47.6 300.4L228.3 469.1c7.5 7 17.4 10.9 27.7 10.9s20.2-3.9 27.7-10.9L464.4 300.4c30.4-28.3 47.6-68 47.6-109.5v-5.8c0-69.9-50.5-129.5-119.4-141C347 36.5 300.6 51.4 268 84L256 96 244 84c-32.6-32.6-79-47.5-124.6-39.9C50.5 55.6 0 115.2 0 185.1v5.8c0 41.5 17.2 81.2 47.6 109.5z"
-					/>
-				</svg>
-				&nbsp; {{ this.result.aggregateLikes }}
-				people liked this recipe
-			</div>
-			<div
-				v-html="this.result.summary"
-				style="margin-top: 1%; margin-bottom: 2%; text-align: left"
-			></div>
+			<div class="modal-content">
+				<div class="modal-meta">
+					❤️ {{ this.result.aggregateLikes }} people liked this recipe
+				</div>
+				<div v-html="this.result.summary" class="modal-summary"></div>
 
-			<div style="text-align: left">Ingredients:</div>
-
-			<div style="text-align: left; margin-top: 1%">
-				<li v-for="ing in this.result.extendedIngredients" :key="ing.id">
-					{{ ing.original }}
-				</li>
-			</div>
-
-			<div style="text-align: left; margin-top: 2%">Instructions:</div>
-
-			<div style="text-align: left; margin-top: 1%">
-				<div
-					v-for="step in this.result.analyzedInstructions"
-					:key="step.number"
-				>
-					<p
-						style="margin-top: 1%"
-						v-for="(lol, index) in step.steps"
-						:key="lol.name"
-					>
-						{{ index + 1 }}. {{ lol.step }}
-					</p>
+				<div class="modal-columns">
+					<div class="modal-column ingredients">
+						<h6>Ingredients:</h6>
+						<ul>
+							<li v-for="ing in this.result.extendedIngredients" :key="ing.id" class="ingredient-item">
+								• {{ ing.original }}
+							</li>
+						</ul>
+					</div>
+					<div class="modal-column steps">
+						<h6>Instructions:</h6>
+						<div v-for="step in this.result.analyzedInstructions" :key="step.number">
+							<div v-for="(instruction, index) in step.steps" :key="instruction.name" class="instruction-step mb-3">
+								<strong>Step {{ index + 1 }}:</strong> {{ instruction.step }}
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</CModalBody>
@@ -146,4 +102,113 @@ export default {
 <style scoped>
 @import "@coreui/coreui/dist/css/coreui.min.css";
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+.border-container {
+	border: 1px solid #dcdcdc; /* Light grey border */
+	border-radius: 10px; /* Rounded corners */
+}
+
+.image-container img {
+	padding: 10px;
+	border-radius: 25px; /* Rounded corners for the image */
+}
+
+.text-container p {
+	font-size: 14px; /* Smaller text size */
+	text-align: left; /* Align text to the left */
+}
+
+.text-container {
+	min-height: 85px; /* Adjust as needed */
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.text-container span {
+	font-size: 12px; /* Smaller text size */
+	text-align: left; /* Align text to the left */
+}
+
+.smaller-title {
+	font-size: 20px;
+	font-weight: bold;
+	text-align: left;
+}
+
+.modal-content {
+	padding: 20px;
+}
+
+.modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #e9ecef;
+}
+
+.modal-title {
+	font-size: 24px;
+	font-weight: bold;
+}
+
+.close {
+	font-size: 30px;
+	color: #333;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.modal-meta {
+	font-size: 14px;
+	color: #6c757d;
+	margin-bottom: 10px;
+}
+
+.modal-summary {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
+.modal-columns {
+	display: grid;
+	grid-template-columns: 1fr 2fr; /* Left column narrower, right column wider */
+	gap: 20px;
+}
+
+.modal-column {
+	padding: 10px;
+	background: #f8f9fa;
+	border-radius: 8px;
+}
+
+.ingredients {
+	background-color: #fff; /* White background for ingredients */
+}
+
+.steps {
+	background-color: #fff; /* White background for steps */
+}
+
+h6 {
+	font-size: 18px; /* Header size for ingredients and steps */
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+.ingredient-item {
+	text-align: left;
+	padding: 5px; /* Padding inside each list item */
+	margin-bottom: 5px; /* Space between list items */
+}
+
+.instruction-step {
+	text-align:left;
+	border: 1px solid #dcdcdc; /* 1px border for each ingredient */
+	border-radius: 10px; /* Rounded corners for the border */
+	margin-top: 5px;
+	font-size: 16px;
+}
 </style>
