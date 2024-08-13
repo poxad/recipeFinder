@@ -1,54 +1,15 @@
-<script>
-import { CModal, CModalBody } from "@coreui/vue";
-
-export default {
-	props: ["project"],
-	data() {
-		return {
-			result: [],
-			modalVisible: false, // Data property to control modal visibility
-			apiKey: "c586a88813394225a6bb560d838eb03b",
-		};
-	},
-	methods: {
-		async openModal() {
-			await this.getInfo(this.project.id);
-			this.modalVisible = true; // Show modal
-		},
-		closeModal() {
-			this.modalVisible = false; // Close modal
-		},
-		async getInfo(id) {
-			try {
-				const response = await fetch(
-					`https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${this.apiKey}`
-				);
-				const data = await response.json();
-				this.result = data;
-			} catch (error) {
-				console.error(error);
-			}
-		},
-	},
-	components: {
-		CModal,
-		CModalBody,
-	},
-};
-</script>
-
 <template>
 	<div
-		class="rounded-xl shadow-lg hover:shadow-xl cursor-pointer mb-10 sm:mb-0 bg-secondary-light dark:bg-ternary-dark border-container"
+		class="rounded-xl shadow-lg hover:shadow-xl cursor-pointer mb-10 sm:mb-0 bg-secondary-light dark:bg-ternary-dark border-container hover-effect"
 		@click="openModal()"
 	>
 		<div class="image-container">
 			<img :src="project.image" :alt="project.title" class="image" />
 		</div>
 		<div class="text-container px-3 mb-3 flex flex-col justify-between">
-			<p class="font-general-semibold text-sm text-ternary-dark dark:text-ternary-light font-semibold mb-2">
+			<h5 class="project-title font-general-semibold text-sm text-ternary-dark dark:text-ternary-light font-semibold mb-2">
 				{{ project.title }}
-			</p>
+			</h5>
 			<span class="font-general-medium text-xs text-ternary-dark dark:text-ternary-light self-center mt-auto">
 				Click for more details
 			</span>
@@ -88,7 +49,7 @@ export default {
 					<div class="modal-column steps">
 						<h6>Instructions:</h6>
 						<div v-for="step in this.result.analyzedInstructions" :key="step.number">
-							<div v-for="(instruction, index) in step.steps" :key="instruction.name" class="instruction-step mb-3">
+							<div v-for="(instruction, index) in step.steps" :key="instruction.name" class="instruction-step mb-3 px-6 py-6">
 								<strong>Step {{ index + 1 }}:</strong> {{ instruction.step }}
 							</div>
 						</div>
@@ -98,6 +59,45 @@ export default {
 		</CModalBody>
 	</CModal>
 </template>
+
+<script>
+import { CModal, CModalBody } from "@coreui/vue";
+
+export default {
+	props: ["project"],
+	data() {
+		return {
+			result: [],
+			modalVisible: false, // Data property to control modal visibility
+			apiKey: "c586a88813394225a6bb560d838eb03b",
+		};
+	},
+	methods: {
+		async openModal() {
+			await this.getInfo(this.project.id);
+			this.modalVisible = true; // Show modal
+		},
+		closeModal() {
+			this.modalVisible = false; // Close modal
+		},
+		async getInfo(id) {
+			try {
+				const response = await fetch(
+					`https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${this.apiKey}`
+				);
+				const data = await response.json();
+				this.result = data;
+			} catch (error) {
+				console.error(error);
+			}
+		},
+	},
+	components: {
+		CModal,
+		CModalBody,
+	},
+};
+</script>
 
 <style scoped>
 @import "@coreui/coreui/dist/css/coreui.min.css";
@@ -118,6 +118,14 @@ export default {
 	text-align: left; /* Align text to the left */
 }
 
+.project-title {
+	font-size: 20px; /* Desired title size */
+	font-weight: bold;
+	margin: 0; /* Reset margin to prevent shifting */
+	padding: 0; /* Reset padding */
+	text-align: left;
+}
+
 .text-container {
 	min-height: 85px; /* Adjust as needed */
 	display: flex;
@@ -126,8 +134,9 @@ export default {
 }
 
 .text-container span {
-	font-size: 12px; /* Smaller text size */
-	text-align: left; /* Align text to the left */
+	font-size: 12px;
+	text-align: left;
+	margin-top: auto; /* Ensure it stays at the bottom */
 }
 
 .smaller-title {
@@ -162,7 +171,7 @@ export default {
 }
 
 .modal-meta {
-	font-size: 14px;
+	font-size: 20px;
 	color: #6c757d;
 	margin-bottom: 10px;
 }
@@ -185,11 +194,11 @@ export default {
 }
 
 .ingredients {
-	background-color: #fff; /* White background for ingredients */
+	background-color: #f0f0f0; /* Light grey background for ingredients */
 }
 
 .steps {
-	background-color: #fff; /* White background for steps */
+	background-color: #f7f7f7; /* Light grey background for steps */
 }
 
 h6 {
@@ -205,10 +214,22 @@ h6 {
 }
 
 .instruction-step {
-	text-align:left;
-	border: 1px solid #dcdcdc; /* 1px border for each ingredient */
-	border-radius: 10px; /* Rounded corners for the border */
+	text-align: left;
+	border: 1px solid #dcdcdc; /* 1px border for each instruction */
+	border-radius: 8px; /* Rounded corners for the border */
 	margin-top: 5px;
 	font-size: 16px;
+	background-color: #fff; /* White background for instructions */
+	padding: 10px; /* Padding for instructions */
+}
+
+/* Added hover effect */
+.hover-effect {
+	transition: transform 0.5s ease, background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.hover-effect:hover {
+	background-color: #f0f0f0; /* Light grey background on hover */
+	transform: translateY(-5px); /* Move the container up by 5px on hover */
 }
 </style>

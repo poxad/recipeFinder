@@ -2,6 +2,7 @@
 import feather from "feather-icons";
 import Multiselect from "@vueform/multiselect";
 import ProjectSingle from "../components/projects/ProjectSingle.vue";
+
 export default {
 	components: { Multiselect, ProjectSingle },
 	name: "Projects",
@@ -135,6 +136,8 @@ export default {
 				"skinless boneless chicken breasts",
 			],
 			result: [],
+			showAlert: false,
+			alertMessage: "",
 		};
 	},
 
@@ -148,6 +151,15 @@ export default {
 			this.taggingSelected.push(tag);
 		},
 		async fetchData() {
+			if (!this.value || this.value.length === 0) {
+				this.alertMessage = "Please input at least 1 ingredient.";
+				this.showAlert = true;
+				setTimeout(() => {
+					this.showAlert = false;
+				}, 3000);
+				return;
+			}
+
 			try {
 				const valueString = this.value.join(",");
 				console.log(valueString);
@@ -202,9 +214,18 @@ export default {
 				></i>
 			</span>
 		</div>
-		<!-- {{ this.result }} -->
+
+		<!-- Alert for no ingredients input -->
 		<div
-			class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 mt-6 sm:gap-10 py-12"
+			v-if="showAlert"
+			class="alert alert-danger"
+			style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;"
+		>
+			{{ alertMessage }}
+		</div>
+
+		<div
+			class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mt-6 sm:gap-10 py-12"
 		>
 			<ProjectSingle
 				v-for="recipe in result"
@@ -220,4 +241,6 @@ export default {
 	--ms-tag-bg: #6366f1;
 	--ms-tag-color: #6366f1;
 }
+
+
 </style>
