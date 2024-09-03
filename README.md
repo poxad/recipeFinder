@@ -11,7 +11,6 @@
 - [Usage](#usage)
 - [Pages](#pages)
 - [API Reference](#api-reference)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Features
